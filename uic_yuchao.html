@@ -1,0 +1,159 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+
+		<title>UIC Head-photo Synthesizer</title>
+
+		<script src="jquery-1.10.2.js" type="text/javascript" charset="utf-8"></script>
+		
+		<style>
+			body {
+				font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+			}
+			
+			p.help {
+				font-size: xx-large;
+			}
+			
+			p#footer {
+				font-size: 42px;
+			}
+			
+			#foot {
+				width: 100%;
+				position: relative;
+				bottom: 12px;
+			}
+			
+			#head {
+				position: relative;
+				top: 48px;
+			}
+			
+			.ycUpload {
+				font-size: 66px;
+				text-align: center;
+				text-decoration: none;
+			    width: 90%;
+			    height: 144px;
+			    line-height: 144px;
+			    position: relative;
+			    cursor: pointer;
+			    color: #ffffff;
+			    background: #6f6e6e;
+			    border: 0px inset black;
+			    border-radius: 4px;
+			    overflow: hidden;
+			    display: inline-block;
+			    *display: inline;
+			    *zoom: 1
+			}
+			
+			.ycUpload input {
+			    position: absolute;
+			    font-size: 100px;
+			    right: 0;
+			    top: 0;
+			    opacity: 0;
+			    filter: alpha(opacity = 0);
+			    cursor: pointer;
+			}
+			
+		</style>
+	</head>
+	
+	<body>
+		<div align="center" id="head">
+			
+			<img id="imgBox" align="center" width="879" height="879"/>
+			
+			<br /><br /><br />
+			
+			<a href="javascript:;" class="ycUpload">Upload a photo
+				<input type="file" accept="image/*" id="yuchao">
+			</a>
+			
+			<br /><br />
+
+			<select name="type" id="type" style="width: 90%; height: 42px; font-size: 23px;">
+				<option value=1 selected>尖角</option>
+				<option value=2>圆角</option>
+			</select>
+			
+			<p class="help">推荐选择<b>正方形</b>照片，生成头像后可长按并保存。</p>
+			<p class="help" style="color: #999696">手机拍的原始照片会出现翻转（截图或者通过其他渠道保存的图片不会），对图片进行剪切之后再次上传即可解决此问题。</p>
+			<br /><br /><br /><br />
+			
+		</div>
+
+		<div align="center" id="foot">
+			<p id="footer"><a href="https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzA4NDEzMjg3MA==&scene=110#wechat_redirect">关注</a> UICHCC</p>
+		</div>
+
+		<div align="center" class="img_photo" hidden="true">
+		    <img src="UICLogo.png" width="879" height="879">
+		    <img src="UICLogo2.png" width="879" height="879">
+		</div>		
+
+		<script>
+	
+			var wid = 879;
+
+		    var c = document.createElement('canvas');
+		    var ctx = c.getContext('2d');
+		    c.width = wid;
+		    c.height = wid;
+		    
+			ctx.fillStyle = 'white'; 
+		    ctx.rect(0, 0, wid, wid);
+
+		    var data1 = new Array();
+		    for(var i = 0; i < $('.img_photo img').length; i++) {
+		        data1[i]=$('.img_photo img').eq(i).attr('src');
+		    } 
+			var typeSel = document.getElementById("type")
+			var type = 0
+			var imgSrc = "";
+
+			typeSel.onchange = function() {
+				type = parseInt(typeSel.options[typeSel.selectedIndex].value) - 1
+				if (imgSrc.length > 0) {
+					ctx.fill()
+					var img = new Image(); 
+					img.src = imgSrc;
+					ctx.drawImage(img, 78, 120, wid - 200, wid - 190);
+					var img2 = new Image(); 
+					img2.src = data1[type];
+					ctx.drawImage(img2, 0, 0, wid, wid);
+					
+					$('#imgBox').attr('src', c.toDataURL("image/jpeg"));
+				}
+			}
+
+			$("#yuchao").change(function() {
+			    ctx.fill();
+				var file = new FileReader(); 
+				var furl = $('#yuchao')[0].files[0];
+				file.readAsDataURL(furl);
+				file.onload = function(e){
+					var img = new Image(); 
+					img.src = e.target.result;
+					imgSrc = img.src
+					img.onload = function () {
+						ctx.drawImage(this, 78, 120, wid - 200, wid - 190);
+
+			            var img = new Image();
+			            img.src = data1[type];
+						ctx.drawImage(img, 0, 0, wid, wid);
+						
+						$('#imgBox').attr('src', c.toDataURL("image/jpeg"));
+					}
+				};
+			});
+									
+		</script>
+	
+	</body>
+
+</html>
